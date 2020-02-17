@@ -82,7 +82,8 @@ export default class LightboxOverlay extends Component {
         y: 0,
         opacity: 1,
       },
-      pan: new Animated.Value(0),
+      panY: new Animated.Value(0),
+      panX: new Animated.Value(0),
       openVal: new Animated.Value(0),
     };
     this._panResponder = PanResponder.create({
@@ -93,12 +94,13 @@ export default class LightboxOverlay extends Component {
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => !this.state.isAnimating,
 
       onPanResponderGrant: (evt, gestureState) => {
-        this.state.pan.setValue(0);
+        this.state.panX.setValue(0);
+        this.state.panY.setValue(0);
         this.setState({ isPanning: true });
       },
       onPanResponderMove: Animated.event([
         null,
-        { dy: this.state.pan }
+        { dy: this.state.panY, dx: this.state.panX }
       ]),
       onPanResponderTerminationRequest: (evt, gestureState) => true,
       onPanResponderRelease: (evt, gestureState) => {
@@ -114,7 +116,7 @@ export default class LightboxOverlay extends Component {
           this.close();
         } else {
           Animated.spring(
-            this.state.pan,
+            new Animated.ValueXY({x: this.state.panX, y: this.state.panY}),
             { toValue: 0, ...this.props.springConfig }
           ).start(() => { this.setState({ isPanning: false }); });
         }
@@ -132,7 +134,8 @@ export default class LightboxOverlay extends Component {
     if(isIOS) {
       StatusBar.setHidden(true, 'fade');
     }
-    this.state.pan.setValue(0);
+    this.state.panX.setValue(0);
+    this.state.panY.setValue(0);
     this.setState({
       isAnimating: true,
       target: {
@@ -204,9 +207,10 @@ export default class LightboxOverlay extends Component {
     let dragStyle;
     if(isPanning) {
       dragStyle = {
-        top: this.state.pan,
+        top: this.state.panY,
+        left: this.state.panX,
       };
-      lightboxOpacityStyle.opacity = this.state.pan.interpolate({inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT], outputRange: [0, 1, 0]});
+      lightboxOpacityStyle.opacity = this.state.panY.interpolate({inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT], outputRange: [0, 1, 0]});
     }
 
     const openStyle = [styles.open, {
