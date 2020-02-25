@@ -220,20 +220,19 @@ export default class LightboxOverlay extends Component {
 
     let dragStyle;
     if (isPanning) {
-      console.log(this.state.panY)
-      console.log(Animated.add(this.state.panY.interpolate({
-        inputRange: [0, WINDOW_HEIGHT],
-        outputRange: [0, WINDOW_WIDTH]}), this.state.panY));
-
       dragStyle = {
         top: this.state.panY,
-        left: Animated.add(this.state.panY.interpolate({
-          inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
-          outputRange: [WINDOW_WIDTH*0.45, 0 , WINDOW_WIDTH*0.45]}), this.state.panX), // lol ?
+        left: Animated.add(
+          this.state.panY.interpolate({
+            inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
+            outputRange: [WINDOW_WIDTH * 0.45, 0, WINDOW_WIDTH * 0.45]
+          }),
+          this.state.panX
+        ), // lol ?
         width: this.state.panY.interpolate({
           inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
           outputRange: [0, WINDOW_WIDTH, 0]
-        }),
+        })
         // height: this.state.panY.interpolate({
         //   inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
         //   outputRange: [0, origin.height, 0]
